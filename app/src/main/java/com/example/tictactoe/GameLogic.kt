@@ -83,13 +83,15 @@ object GameLogic : Application() {
                    ((grid[0].tag == grid[4].tag && grid[0].tag == grid[8].tag) || // check first diagonal
                    (grid[2].tag == grid[4].tag && grid[2].tag == grid[6].tag))  // check second diagonal
 
-        for ((horizontal, vertical) in (0..6 step 3).zip(0..2)) {
-            if ((grid[vertical].drawable != null || grid[horizontal].drawable != null) &&
-                       ((grid[horizontal].tag == grid[horizontal + 1].tag && grid[horizontal].tag == grid[horizontal + 2].tag) || // check horizontal lines
-                       (grid[vertical].tag == grid[vertical + 3].tag && grid[vertical].tag == grid[vertical + 6].tag))) // check vertical lines
-            {
-                isWinner = true
-                break
+        if(!isWinner) {
+            for ((horizontal, vertical) in (0..6 step 3).zip(0..2)) {
+                if ((grid[vertical].drawable != null || grid[horizontal].drawable != null) &&
+                        ((grid[horizontal].tag == grid[horizontal + 1].tag && grid[horizontal].tag == grid[horizontal + 2].tag) || // check horizontal lines
+                                (grid[vertical].tag == grid[vertical + 3].tag && grid[vertical].tag == grid[vertical + 6].tag))) // check vertical lines
+                {
+                    isWinner = true
+                    break
+                }
             }
         }
 
@@ -98,7 +100,7 @@ object GameLogic : Application() {
         if(isWinner || allSquaresAreFilled) {
             var congratulationText = ""
             if (isWinner) {
-                congratulationText = if (!isFirstPlayer) "First player has won" else "Second player has won"
+                congratulationText = if (!isFirstPlayer) "X has won" else "O has won"
             } else if (!isWinner && allSquaresAreFilled) {
                 congratulationText = "It's draw"
             }
