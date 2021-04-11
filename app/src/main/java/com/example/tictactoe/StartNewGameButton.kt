@@ -1,5 +1,7 @@
 package com.example.tictactoe
 
+import android.R
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
@@ -11,6 +13,7 @@ class StartNewGameButton(context: Context, attr: AttributeSet?) : AppCompatButto
     init {
         this.setOnClickListener {
             val intent = Intent(context, MainActivity::class.java)
+            val options = ActivityOptions.makeCustomAnimation(context, R.anim.fade_in, R.anim.fade_out)
             context.startActivity(intent)
         }
     }

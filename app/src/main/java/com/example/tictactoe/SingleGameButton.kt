@@ -1,9 +1,12 @@
 package com.example.tictactoe
 
+import android.R
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
+
 
 class SingleGameButton(context: Context, attrs: AttributeSet?) :
     AppCompatButton(context, attrs) {
@@ -13,7 +16,8 @@ class SingleGameButton(context: Context, attrs: AttributeSet?) :
             GameLogic.isSingleGame = true
 
             val intent = Intent(context, GameActivity::class.java)
-            context.startActivity(intent)
+            val options = ActivityOptions.makeCustomAnimation(context, R.anim.fade_in, R.anim.fade_out)
+            context.startActivity(intent, options.toBundle())
         }
     }
 }

@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
@@ -45,7 +47,7 @@ object GameLogic : Application() {
         }
 
         isFirstPlayer = !isFirstPlayer
-        CheckWinner()
+        CheckGameState()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -55,32 +57,33 @@ object GameLogic : Application() {
         square.tag = "x"
         isFirstPlayer = false
 
-        if(CheckWinner())
+        if(CheckGameState())
             return
 
         val randomSquare = grid.filter { s -> s.drawable == null }.randomOrNull()
-        randomSquare?.setImageResource(R.drawable.o)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            randomSquare?.setImageResource(R.drawable.o)
+        },200)
+
         randomSquare?.tag = "o"
 
         if(randomSquare != null)
             isFirstPlayer = true
 
-        CheckWinner()
+        CheckGameState()
     }
 
     @ExperimentalStdlibApi
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun CheckWinner() : Boolean{
+    private fun CheckGameState() : Boolean{
         var isWinner: Boolean
-        var horizontal = 0
-        var vertical = 0
 
         isWinner = (grid[4].drawable != null) && // check if center not null
                    ((grid[0].tag == grid[4].tag && grid[0].tag == grid[8].tag) || // check first diagonal
                    (grid[2].tag == grid[4].tag && grid[2].tag == grid[6].tag))  // check second diagonal
 
-        while(vertical < 3 && !isWinner) {
-
+        for ((horizontal, vertical) in (0..6 step 3).zip(0..2)) {
             if ((grid[vertical].drawable != null || grid[horizontal].drawable != null) &&
                        ((grid[horizontal].tag == grid[horizontal + 1].tag && grid[horizontal].tag == grid[horizontal + 2].tag) || // check horizontal lines
                        (grid[vertical].tag == grid[vertical + 3].tag && grid[vertical].tag == grid[vertical + 6].tag))) // check vertical lines
@@ -88,13 +91,11 @@ object GameLogic : Application() {
                 isWinner = true
                 break
             }
-            horizontal += 3
-            vertical += 1
         }
 
         val allSquaresAreFilled = grid.all { s -> s.drawable != null }
 
-        if(isWinner || (!isWinner && allSquaresAreFilled)) {
+        if(isWinner || allSquaresAreFilled) {
             var congratulationText = ""
             if (isWinner) {
                 congratulationText = if (!isFirstPlayer) "First player has won" else "Second player has won"
@@ -104,7 +105,7 @@ object GameLogic : Application() {
             OpenWinnerPopUpWindow(congratulationText)
             ResetGame()
         }
-        return isWinner
+        return isWinner || allSquaresAreFilled
     }
 
     private fun OpenWinnerPopUpWindow(congratulationText: String){
